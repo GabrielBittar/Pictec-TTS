@@ -2,7 +2,7 @@
 // Este script fica rodando em segundo plano.
 
 // Constantes para a API do Gemini
-const GEMINI_MODEL = 'gemini-2.5-flash';
+const GEMINI_MODEL = 'gemini-flash-latest';
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 // --- NOVO: Criação do item do Menu de Contexto ---
@@ -142,3 +142,26 @@ console.log("Chamando a URL:", API_URL);
         chrome.tabs.sendMessage(tabId, { error: `Erro interno: ${e.message}` });
     }
 }
+
+// Escuta pelo comando de teclado definido no manifest (Alt+I)
+chrome.commands.onCommand.addListener((command) => {
+    if (command === "analyze-focused-image") {
+        // Busca a aba ativa no momento para enviar a instrução
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            if (tabs[0]) {
+                // Envia uma mensagem para o content.js da aba ativa
+                chrome.tabs.sendMessage(tabs[0].id, { action: "analyzeFocused" });
+            }
+        });
+    }
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    // Se a mensagem for 'analyzeImage', ele chama a função de análise
+    if (request.action === 'analyzeImage' && request.imageUrl) {
+        console.log("Atalho detectado: Iniciando análise da imagem focada.");
+        // O 'sender.tab.id' garante que a resposta volte para a aba certa
+        handleImageAnalysis(request.imageUrl, sender.tab.id);
+    }
+    return true; // Mantém o canal aberto para evitar erros de conexão
+});

@@ -11,6 +11,14 @@
 "host_permissions": [
 "https://*.googleapis.com/"
 ],
+"commands": {
+    "analyze-focused-image": {
+      "suggested_key": {
+        "default": "Alt+I"
+      },
+      "description": "Analisa a imagem que está com o foco do teclado."
+    }
+},
 "action": {
 "default_popup": "popup.html",
 "default_icon": {
