@@ -2,14 +2,14 @@
 // Este script fica rodando em segundo plano.
 
 // Constantes para a API do Gemini
-const GEMINI_MODEL = 'gemini-2.5-flash-preview-05-20';
-const API_URL_BASE = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+const GEMINI_MODEL = 'gemini-2.5-flash';
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 // --- NOVO: Criação do item do Menu de Contexto ---
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "analyzeSelectedImage",
-        title: "Gemini: Descrever Imagem para Estudo",
+        title: "PictecTTS: Descrever imagem com Gemini AI",
         contexts: ["image"] // O item só aparece quando o usuário clica com o botão direito em uma imagem
     });
 });
@@ -81,7 +81,7 @@ async function handleImageAnalysis(imageUrl, tabId) {
             contents: [
                 {
                     parts: [
-                        { text: "Você é um assistente de aprendizado. Analise esta imagem detalhadamente, focando em elementos educacionais, como gráficos, diagramas, figuras geométricas (triângulos, quadrados), números ou rótulos científicos. Use frases claras e completas, ideais para um motor de Texto para Fala (TTS). Exemplo de saída: 'Esta imagem contém um triângulo com um ângulo reto e outro de 15 graus.'" },
+                        { text: "Você é um assistente de aprendizado. Analise esta imagem detalhadamente, focando em elementos educacionais, como gráficos, diagramas, figuras geométricas (triângulos, quadrados), números ou rótulos científicos. Use frases claras e completas, ideais para um motor de Texto para Fala (TTS). Exemplo de saída: 'Esta imagem contém um triângulo com um ângulo reto e outro de 15 graus.' Tome cuidado para não ser prolixo, seja objetivo e não se prolongue muito na resposta. Se houver uma pessoa ou personagem famoso retratado na imagem e você conseguir identificá-lo, anuncie que há uma pessoa e identifique-a deixando claro que há uma margem de erro em sua identificação. Se houver forma geométrica ou número, deixe claro qual/quais e qual sua posição/função perceptível na imagem. Se houver um mapa, descreva os pontos mais importantes, linhas, legendas e indicadores disponíveis." },
                         {
                             inlineData: {
                                 mimeType: imageMimeType,
@@ -98,9 +98,9 @@ async function handleImageAnalysis(imageUrl, tabId) {
                 maxOutputTokens: 2048,
             }
         };
-
+console.log("Chamando a URL:", API_URL);
         // 4. Fazer a requisição para a API do Gemini
-        const response = await fetch(API_URL_BASE, {
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
